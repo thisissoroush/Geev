@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /app
+
+COPY . ./
+
+RUN dotnet restore "Geev.Api/Geev.Api.csproj"
+RUN dotnet build "Geev.Api/Geev.Api.csproj" -c Release -o /app/build
+RUN dotnet publish "Geev.Api/Geev.Api.csproj" -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+WORKDIR /app
+COPY --from=build /app/publish .
+RUN dotnet --list-runtimes
+
+
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV NUGET_CERT_REVOCATION_MODE=offline
+ENV ASPNETCORE_URLS=http://+:80
+
+
+EXPOSE 80
+ENTRYPOINT ["dotnet", "Geev.Api.dll"]

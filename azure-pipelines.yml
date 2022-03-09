@@ -1,0 +1,32 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - staging
+
+pool:
+  name: Build
+
+variables:
+  ProjectName: 'geev.staging'
+  ImageName: '/$(ProjectName)'
+  ImageTag: '$(Build.SourceBranchName)'
+  
+steps:
+  - task: Bash@3
+    displayName: Build docker image
+    inputs:
+      targetType : 'inline'
+      script: 'docker build -t $(ImageName):$(ImageTag) -f Dockerfile.Staging .'
+      workingDirectory: '$(build.sourcesdirectory)'
+
+  - task: Bash@3
+    displayName: push docker image
+    inputs:
+      targetType: 'inline'
+      script: 'docker push $(ImageName):$(ImageTag)'
+      workingDirectory: '$(Build.ArtifactStagingDirectory)'
