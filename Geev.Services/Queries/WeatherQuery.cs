@@ -25,7 +25,6 @@ public class WeatherResponse
 public class WeatherQueryHandler : IRequestHandler<WeatherQuery, WeatherResponse>
 {
     private readonly GeevDbContext _dbContext;
-    static readonly HttpClient _client = new HttpClient();
     private readonly string _weatherEndPoint;
     private IMemoryCache _cache;
     private readonly string _weatherCacheKey = "weather";
@@ -37,7 +36,6 @@ public class WeatherQueryHandler : IRequestHandler<WeatherQuery, WeatherResponse
     {
         _dbContext = GeevDbContext;
         _weatherEndPoint = configuration["WeatherApiEndPoint"];
-        //_client.Timeout = TimeSpan.FromSeconds(5);
         _cache = cache;
     }
 
@@ -110,7 +108,11 @@ public class WeatherQueryHandler : IRequestHandler<WeatherQuery, WeatherResponse
     {
         try
         {
-            var apiResponse = await _client.GetAsync(_weatherEndPoint, cancellationToken);
+            var client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(5);
+
+            var apiResponse = await client.GetAsync(_weatherEndPoint, cancellationToken);
+
             if (apiResponse.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<WeatherResponse>(apiResponse.Content.ReadAsStringAsync().Result.ToString());
