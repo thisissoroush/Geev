@@ -115,7 +115,7 @@ public class WeatherQueryHandler : IRequestHandler<WeatherQuery, WeatherResponse
 
             if (apiResponse.IsSuccessStatusCode)
             {
-                return JsonConvert.DeserializeObject<WeatherResponse>(apiResponse.Content.ReadAsStringAsync().Result.ToString());
+                return JsonConvert.DeserializeObject<WeatherResponse>(apiResponse.Content.ReadAsStringAsync().Result);
             }
         }
         catch (Exception)
