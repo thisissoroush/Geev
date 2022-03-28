@@ -6,9 +6,16 @@ public class Program
 {
     public async static Task Main(string[] args)
     {
-        var host = CreateHostBuilder(args).Build();
+        try
+        {
+            var host = CreateHostBuilder(args).Build();
 
-        await host.RunAsync();
+            await host.RunAsync();
+        }
+        catch (Exception)
+        {
+            Environment.Exit(-1);
+        }
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
